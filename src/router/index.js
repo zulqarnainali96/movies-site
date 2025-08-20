@@ -16,13 +16,10 @@ const routes = [
     component: About,
   },
   {
-    path: "/movies/:id",
+    path: "/movies",
+    name: "Movies",
+    component: Movies,
     children: [
-      {
-        path: '/movies',
-        name: "Movies",
-        component: Movies,
-      },
       {
         name: "Single Movie",
         path: "movies/:id",

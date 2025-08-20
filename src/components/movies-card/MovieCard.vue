@@ -1,5 +1,13 @@
 <script setup>
 
+import { useRouter } from 'vue-router';
+
+const router = useRouter()
+
+function openMovie(id) {
+    router.push(`movies/${id}`)
+}
+
 defineProps({
     movies: Array
 });
@@ -7,12 +15,14 @@ defineProps({
 </script>
 
 <template>
-    <router-link v-for="movie in movies" :key="movie.id" :to="`movies/${movie.id}`">
-        <div :style="{ backgroundImage: `url(https://image.tmdb.org/t/p/w500${movie.backdrop_path})` }" class="movie-card">
-            <h3 class="movie-title">{{ movie.title }}</h3>
-            <p>Rating : {{ movie.vote_average }}</p>
-        </div>
-    </router-link>
+    <!-- <router-link  :to="`movies/${movie.id}`"> -->
+    <div v-for="movie in movies" :key="movie.id" @click="openMovie(movie.id)"
+        :style="{ backgroundImage: `url(https://image.tmdb.org/t/p/w500${movie.backdrop_path})` }" class="movie-card">
+        <h3 class="movie-title">{{ movie.title }}</h3>
+        <p>Rating : {{ movie.vote_average }}</p>
+    </div>
+    <!-- </router-link> -->
+    <button @click="open">Change</button>
 </template>
 
 <style scoped>
@@ -31,16 +41,19 @@ defineProps({
     background-size: cover;
     background-position: center;
 }
+
 .movie-card:hover {
     transform: scale(1.05);
 }
-p{
+
+p {
     position: absolute;
     font-size: 0.8em;
     font-weight: 800;
     bottom: 6px;
-    right:6px;
+    right: 6px;
 }
+
 .movie-title {
     font-size: 1rem;
     color: #eee;
