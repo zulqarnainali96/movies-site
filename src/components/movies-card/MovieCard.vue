@@ -1,13 +1,16 @@
 <script setup>
-    import { useRoute } from 'vue-router'
+
+defineProps({
+    movies: Array
+});
+
 </script>
 
 <template>
-    <router-link to="/single-movie">
-        <div class="movie-card">
-            <h3 class="movie-title">Movie Title</h3>
-            <p class="movie-description">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-            <p>Rating : 6.7</p>
+    <router-link v-for="movie in movies" :key="movie.id" :to="`movies/${movie.id}`">
+        <div :style="{ backgroundImage: `url(https://image.tmdb.org/t/p/w500${movie.backdrop_path})` }" class="movie-card">
+            <h3 class="movie-title">{{ movie.title }}</h3>
+            <p>Rating : {{ movie.vote_average }}</p>
         </div>
     </router-link>
 </template>
@@ -17,22 +20,30 @@
     border: 1px solid #eee;
     border-radius: 0.5rem;
     padding: 1rem;
-    width: 160px;
+    width: 180px;
     height: 220px;
     background-color: #fff;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     transition: transform 0.2s;
+    position: relative;
     cursor: pointer;
-}
 
+    background-size: cover;
+    background-position: center;
+}
 .movie-card:hover {
     transform: scale(1.05);
 }
-
+p{
+    position: absolute;
+    font-size: 0.8em;
+    font-weight: 800;
+    bottom: 6px;
+    right:6px;
+}
 .movie-title {
-    border-bottom: 1px solid red;
-    font-size: 1.5rem;
-    color : #333;
+    font-size: 1rem;
+    color: #eee;
     margin-bottom: 0.5rem;
 }
 

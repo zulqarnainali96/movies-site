@@ -6,9 +6,9 @@ import SingleMovie from "../components/movies-card/SingleMovie.vue";
 
 const routes = [
   {
-    name : "Home",
-    path : "/",
-    component : Home
+    name: "Home",
+    path: "/",
+    component: Home,
   },
   {
     name: "About",
@@ -16,15 +16,20 @@ const routes = [
     component: About,
   },
   {
-    name: "Movies",
-    path: "/movies",
-    component: Movies,
+    path: "/movies/:id",
+    children: [
+      {
+        path: '/movies',
+        name: "Movies",
+        component: Movies,
+      },
+      {
+        name: "Single Movie",
+        path: "movies/:id",
+        component: SingleMovie,
+      },
+    ],
   },
-  {
-    name : 'SingleMovie',
-    path : '/single-movie',
-    component : SingleMovie,
-  }
 ];
 
 const router = createRouter({

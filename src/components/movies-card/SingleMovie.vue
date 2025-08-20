@@ -1,3 +1,11 @@
+<script setup>
+import { useMoviesStore } from '@/store/store.js';
+
+const { movies } = useMoviesStore();
+
+console.log($route.params.id)
+</script>
+
 <template>
     <div class="single-movie">
         <h2 class="movie-title">Single Movie Title</h2>
@@ -6,6 +14,4 @@
     </div>
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>
