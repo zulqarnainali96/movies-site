@@ -5,7 +5,7 @@ import { useRouter } from 'vue-router';
 const router = useRouter()
 
 function openMovie(id) {
-    router.push(`movies/${id}`)
+    router.push({ name: 'SingleMovie', params: { path: `movies/${id}` } })
 }
 
 defineProps({
@@ -15,14 +15,14 @@ defineProps({
 </script>
 
 <template>
-    <!-- <router-link  :to="`movies/${movie.id}`"> -->
-    <div v-for="movie in movies" :key="movie.id" @click="openMovie(movie.id)"
-        :style="{ backgroundImage: `url(https://image.tmdb.org/t/p/w500${movie.backdrop_path})` }" class="movie-card">
-        <h3 class="movie-title">{{ movie.title }}</h3>
-        <p>Rating : {{ movie.vote_average }}</p>
-    </div>
-    <!-- </router-link> -->
-    <button @click="open">Change</button>
+    <router-link v-for="movie in movies" :key="movie.id"
+        :to="{ name: 'SingleMovie', params: { id: movie.id } }">
+        <div :style="{ backgroundImage: `url(https://image.tmdb.org/t/p/w500${movie.poster_path})` }"
+            class="movie-card">
+            <h3 class="movie-title">{{ movie.title }}</h3>
+            <p>Rating : {{ movie.vote_average }}</p>
+        </div>
+    </router-link>
 </template>
 
 <style scoped>

@@ -23,11 +23,11 @@ const isLoading = ref(false);
 </script>
 
 <template>
-    <div class="movies-list">
+    <div class="movies-list" v-if="$route.name === 'Movies'">
         <Spinner v-if="isLoading" />
         <MoviesCard :movies="moviesStore.movies" v-else />
     </div>
-    <router-view></router-view>
+    <router-view />
 </template>
 
 
@@ -36,5 +36,7 @@ const isLoading = ref(false);
     display: flex;
     flex-wrap: wrap;
     gap: 16px;
+    width: 100%;
+    height: 100%;
 }
 </style>

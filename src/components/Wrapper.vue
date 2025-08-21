@@ -9,6 +9,6 @@
   padding: 1rem;
   border: 1px solid #eee;
   background-color: #ddd;
-  height: 88vh;
+  height: 87.8vh;
 }
 </style>
