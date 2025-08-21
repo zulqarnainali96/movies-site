@@ -1,4 +1,6 @@
 <script setup>
+import Movies from './Movies.vue';
+
 </script>
 
 <template>

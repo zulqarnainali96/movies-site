@@ -7,7 +7,7 @@
 <style scoped>
 .wrapper {
   padding: 1rem;
-  height: 92.9vh;
+  height: 92.7vh;
   background-color: #eee;
 }
 
@@ -17,5 +17,12 @@
 
 .gradient-color {
   background: linear-gradient(to left, black, gray);
+}
+
+@media screen and (max-width: 768px) {
+  .wrapper {
+    padding: 0.5rem;
+    height: none;
+  }
 }
 </style>

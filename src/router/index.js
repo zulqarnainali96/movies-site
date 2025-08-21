@@ -3,6 +3,7 @@ import About from "@/views/About.vue";
 import Movies from "@/views/Movies.vue";
 import Home from "@/views/Home.vue";
 import SingleMovie from "../components/movies-card/SingleMovie.vue";
+import WatchedMovies from "@/views/WatchedMovies.vue";
 
 const routes = [
   {
@@ -27,6 +28,11 @@ const routes = [
       }
     ]
   },
+  {
+    name : 'WatchedMovies',
+    path : "/watched-movies",
+    component : WatchedMovies
+  }
 ];
 
 const router = createRouter({

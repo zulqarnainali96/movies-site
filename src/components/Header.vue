@@ -17,6 +17,9 @@ import { useRoute } from 'vue-router'
                 <li>
                     <router-link exact-active-class="active" to="/movies">Movies</router-link>
                 </li>
+                <li>
+                    <router-link exact-active-class="active" to="/watched-movies">Watched Movies</router-link>
+                </li>
             </ul>
         </nav>
     </header>

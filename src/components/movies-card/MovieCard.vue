@@ -1,13 +1,5 @@
 <script setup>
 
-import { useRouter } from 'vue-router';
-
-const router = useRouter()
-
-function openMovie(id) {
-    router.push({ name: 'SingleMovie', params: { path: `movies/${id}` } })
-}
-
 defineProps({
     movies: Array
 });
