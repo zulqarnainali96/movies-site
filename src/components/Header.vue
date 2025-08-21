@@ -6,7 +6,9 @@ import { useRoute } from 'vue-router'
 
 <template>
     <header>
-        <h2>MoviesMania</h2>
+        <router-link to="/">
+            <h2>MoviesMania</h2>
+        </router-link>
         <nav>
             <ul>
                 <li>
@@ -33,7 +35,7 @@ header {
 }
 
 .active {
-    color : white
+    color: white
 }
 
 h2 {
