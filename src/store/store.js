@@ -1,20 +1,26 @@
-import { defineStore } from 'pinia'
+import { apiCalls } from "@/Api/api-call";
+import { defineStore } from "pinia";
 
-export const useMoviesStore = defineStore('moviesData',({
-    state : () => ({
-        movies : [],
-        allMovies : [],
-        isLoading : false,
-        error : ""
-    }),
-    getters : {
-        
+export const useMoviesStore = defineStore("moviesData", {
+  state: () => ({
+    movies: [],
+    popular_movies : [],
+    upcoming_movies : [],
+    isLoading: false,
+    error: null,
+  }),
+  getters: {},
+  actions: {
+    async popMovies() {
+      try {
+        this.isLoading = true;
+        const data = await apiCalls.popularMovies();
+        this.popular_movies = data.results;
+      } catch (error) {
+        this.error = error
+      } finally {
+        this.isLoading = false
+      }
     },
-    actions : {
-        async popularMovies(){
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/movie/popular?api_key=${import.meta.env.VITE_API_KEY}`)
-            const data = await response.json()
-            return data.results
-        }
-    }
-}))
+  },
+});
