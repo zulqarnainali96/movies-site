@@ -22,23 +22,28 @@ const apiCalls = {
         },
       };
       fetch(
-        `${import.meta.env.VITE_API_URL}/search/movie?query=${movie.name}&year=${movie.year}`,
+        `${import.meta.env.VITE_API_URL}/search/movie?query=${
+          movie.name
+        }&year=${movie.year}`,
         options
       )
         .then((res) => {
           return res.json();
         })
         .then((data) => {
-          results.push(data);
+          const filterData = data.results?.filter((item) =>
+            item.release_date?.includes(movie.year)
+          );
+          // console.log(data.results);
+          // console.log(filterData);
+          results.push(...filterData);
         })
         .catch((err) => {
-          results.push({ results: "error", message: "movie not found" });
+          results.push({ results: "error", message: `${err.message}` });
         });
     }
     return results;
   },
 };
-
-console.log(apiCalls.watchedMovies());
 
 export { apiCalls };

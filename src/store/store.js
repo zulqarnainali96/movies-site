@@ -4,8 +4,9 @@ import { defineStore } from "pinia";
 export const useMoviesStore = defineStore("moviesData", {
   state: () => ({
     movies: [],
-    popular_movies : [],
-    upcoming_movies : [],
+    watched_movies: [],
+    popular_movies: [],
+    upcoming_movies: [],
     isLoading: false,
     error: null,
   }),
@@ -17,10 +18,13 @@ export const useMoviesStore = defineStore("moviesData", {
         const data = await apiCalls.popularMovies();
         this.popular_movies = data.results;
       } catch (error) {
-        this.error = error
+        this.error = error;
       } finally {
-        this.isLoading = false
+        this.isLoading = false;
       }
+    },
+    watchedMovies() {
+      this.watched_movies = apiCalls.watchedMovies();
     },
   },
 });
