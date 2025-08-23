@@ -1,3 +1,5 @@
+import watchedMoviesArray from "@/watched-movies-data";
+
 const apiCalls = {
   popularMovies() {
     return new Promise(async (resolve, reject) => {
@@ -10,6 +12,33 @@ const apiCalls = {
       resolve(data);
     });
   },
+  watchedMovies() {
+    let results = [];
+    for (let movie of watchedMoviesArray) {
+      let options = {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${import.meta.env.VITE_READ_ACCESS_TOKEN}`,
+        },
+      };
+      fetch(
+        `${import.meta.env.VITE_API_URL}/search/movie?query=${movie.name}&year=${movie.year}`,
+        options
+      )
+        .then((res) => {
+          return res.json();
+        })
+        .then((data) => {
+          results.push(data);
+        })
+        .catch((err) => {
+          results.push({ results: "error", message: "movie not found" });
+        });
+    }
+    return results;
+  },
 };
+
+console.log(apiCalls.watchedMovies());
 
 export { apiCalls };
