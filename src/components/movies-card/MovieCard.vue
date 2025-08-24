@@ -1,13 +1,17 @@
 <script setup>
 
 defineProps({
-    movies: Array
+    movies: Array,
+    class: {
+        type : String,
+        required: false,
+    }
 });
 
 </script>
 
 <template>
-    <router-link v-for="movie in movies" :key="movie.id"
+    <router-link :class="class" v-for="movie in movies" :key="movie.id"
         :to="{ name: 'SingleMovie', params: { id: movie.id } }">
         <div :style="{ backgroundImage: `url(https://image.tmdb.org/t/p/w500${movie.poster_path})` }"
             class="movie-card">

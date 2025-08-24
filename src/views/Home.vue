@@ -1,23 +1,17 @@
 <script setup>
-import MovieCard from "@/components/movies-card/MovieCard.vue";
-import { useMoviesStore } from "@/store/store.js";
-import { onMounted, reactive } from "vue";
-
-const moviesStore = useMoviesStore();
-onMounted(() => {
-  moviesStore.popMovies();
-});
+import PopularMovies from "./PopularMovies.vue";
+import NowPlaying from "./NowPlaying.vue";
+import UpComing from "./UpComing.vue";
 </script>
 
 <template>
-  <div class="home">
-    <h1>Welcome to the Movies Mania</h1>
-    <h3 v-if="!moviesStore.popular_movies.length">No Data Found</h3>
-  </div>
+  <h1>Welcome to the Movies Mania</h1>
+  <h4>Now Playing</h4>
+  <NowPlaying />
   <h4>Popular Movies</h4>
-  <div class="movies-list">
-    <MovieCard :movies="moviesStore.popular_movies" />
-  </div>
+  <PopularMovies />
+  <h4>Up Coming Movies</h4>
+  <UpComing />
 </template>
 
 <style scoped>
@@ -25,16 +19,10 @@ onMounted(() => {
   background-color: #f9f9f9;
   padding: 16px;
 }
-.movies-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-  width: 100%;
-  height: 100%;
-}
-
 h1,
 h3 {
+  background-color: white;
+  padding: 10px;
   text-align: center;
   color: rgba(18, 18, 53, 0.61);
 }

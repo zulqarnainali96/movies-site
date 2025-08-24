@@ -6,6 +6,7 @@ export const useMoviesStore = defineStore("moviesData", {
     movies: [],
     watched_movies: [],
     popular_movies: [],
+    now_playing : [],
     upcoming_movies: [],
     isLoading: false,
     error: null,
@@ -23,8 +24,17 @@ export const useMoviesStore = defineStore("moviesData", {
         this.isLoading = false;
       }
     },
-    watchedMovies() {
-      this.watched_movies = apiCalls.watchedMovies();
+    async watchedMovies() {
+      const data = await apiCalls.watchedMovies();
+      this.watched_movies = data.results
     },
+    async nowPlaying(){
+      const data = await apiCalls.nowPlaying()
+      this.now_playing = data.results;
+    },
+    async upComing(){
+      const data = await apiCalls.upComing()
+      this.upcoming_movies = data.results;
+    }
   },
 });
