@@ -9,9 +9,7 @@ const moviesStore = useMoviesStore();
 onMounted(() => {
   moviesStore.popMovies();
 });
-
 const doubledMovies = computed(() => [...moviesStore.popular_movies, ...moviesStore.popular_movies]);
-console.log(moviesStore.movies);
 </script>
 
 <template>

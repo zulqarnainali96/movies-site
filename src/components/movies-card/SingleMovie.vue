@@ -4,9 +4,11 @@ import { useMoviesStore } from "@/store/store.js";
 const moviesStore = useMoviesStore();
 
 const singleMovie = computed(() => {
-  let id = location.pathname.split("/").pop();
-  return moviesStore.movies.find((movie) => movie.id.toString() === id);
+  // let id = location.pathname.split("/").pop();
+  // return moviesStore.movies.find((movie) => movie.id.toString() === id);
+  return moviesStore.single_movie;
 });
+console.log(moviesStore.single_movie);
 </script>
 
 <template>
@@ -18,7 +20,15 @@ const singleMovie = computed(() => {
           <span>Overview</span> : {{ singleMovie?.overview }}
         </p>
         <br />
-        <p>Rating : {{ singleMovie?.vote_average }}</p>
+        <p class="text-small">
+          Release Date : <span class="pd">{{ singleMovie?.release_date }}</span>
+        </p>
+        <p class="text-small">
+          Rating : <span class="pd">{{ singleMovie?.vote_average }}</span>
+        </p>
+        <p class="text-small">
+          Vote Count : <span class="pd">{{ singleMovie?.vote_count }}</span>
+        </p>
       </div>
       <div>
         <img
@@ -61,7 +71,16 @@ img {
   border-radius: 12px;
   object-fit: contain;
 }
-
+.text-small {
+  font-size: 1em;
+  padding-block: 4px;
+}
+.pd {
+  padding: 0.3rem 6px;
+  background-color: cadetblue;
+  border-radius: 17px;
+  font-size: 0.9em;
+}
 h2 {
   font-size: 2.4rem;
 }

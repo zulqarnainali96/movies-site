@@ -65,7 +65,21 @@ const apiCalls = {
       const data = await response.json();
       resolve(data);
     });
-  },
+  },  
+  topRatedMovies() {
+    let options = {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${import.meta.env.VITE_READ_ACCESS_TOKEN}`,
+      },
+    };
+    return new Promise(async (resolve, reject) => {
+      const response = await fetch( `${import.meta.env.VITE_API_URL}/movie/top_rated`, options
+      );
+      const data = await response.json();
+      resolve(data);
+    });
+  }
 };
 
 export { apiCalls };

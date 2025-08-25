@@ -1,5 +1,8 @@
 <template>
-  <div class="wrapper" :class="{ 'gradient-color': $route.name == 'SingleMovie' }">
+  <div
+    class="wrapper"
+    :class="{ 'gradient-color': $route.name == 'SingleMovie' }"
+  >
     <slot></slot>
   </div>
 </template>
@@ -8,6 +11,9 @@
 .wrapper {
   padding: 1rem;
   height: 92.7vh;
+  overflow-y: scroll;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
   background-color: #eee;
 }
 

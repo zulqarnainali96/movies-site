@@ -1,4 +1,7 @@
 <script setup>
+import { useMoviesStore } from '@/store/store';
+
+const moviesStore = useMoviesStore();
 
 defineProps({
     movies: Array,
@@ -12,7 +15,7 @@ defineProps({
 
 <template>
     <router-link :class="class" v-for="movie in movies" :key="movie.id"
-        :to="{ name: 'SingleMovie', params: { id: movie.id } }">
+        :to="{ name: 'SingleMovie', params: { id: movie.id } }" @click="moviesStore.openSingleMovie(movie)">
         <div :style="{ backgroundImage: `url(https://image.tmdb.org/t/p/w500${movie.poster_path})` }"
             class="movie-card">
             <h3 class="movie-title">{{ movie.title }}</h3>
