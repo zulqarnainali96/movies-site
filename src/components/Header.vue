@@ -1,5 +1,4 @@
 <script setup>
-
 import { useRoute } from 'vue-router'
 
 </script>
@@ -7,7 +6,8 @@ import { useRoute } from 'vue-router'
 <template>
     <header>
         <router-link to="/">
-            <h2>MoviesMania</h2>
+            <img src="/favi.png" width="30" height="50" />
+            <!-- <h2>MoviesMania</h2> -->
         </router-link>
         <nav>
             <ul>
@@ -36,7 +36,10 @@ header {
     align-items: flex-end;
     padding-block-end: 12px;
 }
-
+img {
+    width: 100%;
+    height: 40px;
+}
 .active {
     color: white
 }
