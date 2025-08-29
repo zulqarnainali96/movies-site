@@ -79,7 +79,28 @@ const apiCalls = {
       const data = await response.json();
       resolve(data);
     });
-  }
+  },
+  searchMovies(query) {
+    let options = {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${import.meta.env.VITE_READ_ACCESS_TOKEN}`,
+      },
+    };
+
+    return new Promise(async (resolve, reject) => {
+      try {
+        const response = await fetch(
+          `${import.meta.env.VITE_API_URL}/search/movie?query=${encodeURIComponent(query)}`,
+          options
+        );
+        const data = await response.json();
+        resolve(data);
+      } catch (err) {
+        reject(err);
+      }
+    });
+  },
 };
 
 export { apiCalls };

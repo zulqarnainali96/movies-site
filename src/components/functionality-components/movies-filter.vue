@@ -1,10 +1,24 @@
 <script setup>
 import { useMoviesStore } from "@/store/store";
+import { watch } from "vue";
+import SearchBox from "../search-box.vue";
+const moviesStore = useMoviesStore();
 
+console.log("Initial search:", moviesStore.search_movies);
+watch(
+  () => moviesStore.search_movies,
+  (newValue) => {
+    if (newValue.trim().length > 0) {
+      moviesStore.searchMovies(); // call Pinia action
+    } else {
+      moviesStore.searched_results = [];
+    }
+  }
+);
 defineProps({
   filterMovie: Function,
 });
-const moviesStore = useMoviesStore();
+console.log(moviesStore.search_movies);
 </script>
 
 <template>
@@ -35,10 +49,15 @@ const moviesStore = useMoviesStore();
         Top Rated Movies
       </button>
     </div>
-    <div class="search-movies">
-      <input type="text" placeholder="Search movies..." />
+    <form class="search-movies" @submit.prevent>
+      <input
+        v-model="moviesStore.search_movies"
+        type="text"
+        placeholder="Search movies..."
+      />
       <input type="submit" value="Search" />
-    </div>
+      <SearchBox v-if="moviesStore.searched_results.length > 0" />
+    </form>
   </div>
 </template>
 
@@ -78,7 +97,7 @@ const moviesStore = useMoviesStore();
 }
 /* .filter button:active {
   background-color: #004494;
-} */
+  } */
 .filter button:focus {
   background-color: #004494;
 }
@@ -87,6 +106,7 @@ const moviesStore = useMoviesStore();
   display: flex;
   gap: 8px;
   justify-content: flex-end;
+  position: relative;
 }
 .search-movies input[type="text"] {
   padding: 8px 12px;
