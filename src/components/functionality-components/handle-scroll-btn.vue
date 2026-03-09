@@ -76,10 +76,11 @@ onBeforeUnmount(() => stopAutoScroll());
 <style scoped>
 .scroll-container {
   display: flex;
-  gap: 10px;
+  gap: 16px;
   overflow-x: auto;
   scroll-behavior: smooth;
   scrollbar-width: none;
+  padding: 6px 12px 10px;
 }
 .scroll-container::-webkit-scrollbar {
   display: none;
