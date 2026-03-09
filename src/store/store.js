@@ -6,6 +6,8 @@ export const useMoviesStore = defineStore("moviesData", {
     movies: [],
     single_movie: {},
     watched_movies: [],
+    watched_page: 0,
+    watched_total_pages: 1,
     popular_movies: [],
     now_playing: [],
     top_rated_movies: [],
@@ -57,9 +59,19 @@ export const useMoviesStore = defineStore("moviesData", {
         this.isLoading = false;
       }
     },
-    async watchedMovies() {
-      const data = await apiCalls.watchedMovies();
-      this.watched_movies = data.results;
+    async watchedMovies(page = 1) {
+      const data = await apiCalls.watchedMovies(page);
+      this.watched_page = data.page || page;
+      this.watched_total_pages = data.total_pages || 1;
+      if (page === 1) {
+        this.watched_movies = data.results || [];
+        return;
+      }
+      this.watched_movies = [...this.watched_movies, ...(data.results || [])];
+    },
+    async addMovieToWatchlist(movieId) {
+      const data = await apiCalls.addToWatchlist(movieId);
+      return data;
     },
     async nowPlaying() {
       const data = await apiCalls.nowPlaying();

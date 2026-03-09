@@ -14,7 +14,7 @@ const doubledMovies = computed(() => [...moviesStore.popular_movies, ...moviesSt
 
 <template>
   <HandleScrollBtn>
-    <MovieCard class="slide" :movies="doubledMovies" />
+    <MovieCard class="slide" :movies="doubledMovies" :show-actions="true" />
   </HandleScrollBtn>
   <br/>
 </template>

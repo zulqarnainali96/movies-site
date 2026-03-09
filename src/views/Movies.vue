@@ -43,5 +43,6 @@ onMounted(() => {
   gap: 16px;
   width: 100%;
   height: 100%;
+  margin-top: 16px;
 }
 </style>
