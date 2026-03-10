@@ -41,16 +41,17 @@ function selectMovie(movie) {
 
 <style scoped>
 .container {
-  width: 50%;
+  width: min(520px, 100%);
   max-height: 250px;
   overflow-y: auto;
   transition: all 0.3s ease-in;
   background-color: rgb(255, 248, 248);
   position: absolute;
   box-shadow: 10px 4px 21px -11px gray;
-  z-index: 3;
-  top: 39px;
-  right: 74px;
+  z-index: 999;
+  top: calc(100% + 8px);
+  right: 0;
+  border-radius: 10px;
 }
 
 .search-item {

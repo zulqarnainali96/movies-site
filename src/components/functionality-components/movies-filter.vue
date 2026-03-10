@@ -4,7 +4,6 @@ import { watch } from "vue";
 import SearchBox from "../search-box.vue";
 const moviesStore = useMoviesStore();
 
-console.log("Initial search:", moviesStore.search_movies);
 watch(
   () => moviesStore.search_movies,
   (newValue) => {
@@ -18,7 +17,6 @@ watch(
 defineProps({
   filterMovie: Function,
 });
-console.log(moviesStore.search_movies);
 </script>
 
 <template>
@@ -73,6 +71,8 @@ console.log(moviesStore.search_movies);
   --glass: rgba(255, 255, 255, 0.14);
   --glass-border: rgba(255, 255, 255, 0.22);
 
+  position: relative;
+  z-index: 30;
   display: flex;
   gap: 12px;
   justify-content: space-between;
@@ -129,6 +129,7 @@ console.log(moviesStore.search_movies);
   gap: 10px;
   justify-content: flex-end;
   position: relative;
+  z-index: 40;
   align-items: center;
 }
 
