@@ -81,13 +81,24 @@ onBeforeUnmount(() => {
       :to="{ name: 'SingleMovie', params: { id: movie.id } }"
       @click="moviesStore.openSingleMovie(movie)"
     >
-      <div
-        :style="{ backgroundImage: `url(https://image.tmdb.org/t/p/w500${movie.poster_path})` }"
-        class="movie-card"
-      >
-        <h3 class="movie-title">{{ movie.title }}</h3>
-        <p>Rating : {{ movie.vote_average }}</p>
-      </div>
+      <article class="movie-card">
+        <div class="poster">
+          <img
+            v-if="movie.poster_path"
+            loading="lazy"
+            :src="`https://image.tmdb.org/t/p/w500${movie.poster_path}`"
+            :alt="movie.title"
+          />
+          <div v-else class="poster-fallback">Poster unavailable</div>
+          <span class="rating-badge">★ {{ movie.vote_average?.toFixed?.(1) || "0.0" }}</span>
+          <div class="overlay">
+            <h3 class="movie-title">{{ movie.title }}</h3>
+            <p class="movie-meta">
+              {{ movie.release_date?.slice(0, 4) || "TBD" }}
+            </p>
+          </div>
+        </div>
+      </article>
     </router-link>
   </div>
 </template>
@@ -154,40 +165,79 @@ onBeforeUnmount(() => {
 }
 
 .movie-card {
-  border: 1px solid #eee;
-  border-radius: 0.5rem;
-  padding: 1rem;
-  width: 180px;
-  height: 220px;
-  background-color: #fff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s;
-  position: relative;
-  cursor: pointer;
-  background-size: cover;
-  background-position: center;
+  border-radius: 18px;
+  overflow: hidden;
+  width: clamp(170px, 18vw, 210px);
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow: 0 16px 28px rgba(2, 6, 23, 0.35);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
 .movie-card:hover {
-  transform: scale(1.05);
+  transform: translateY(-6px) scale(1.02);
+  box-shadow: 0 24px 40px rgba(2, 6, 23, 0.45);
 }
 
-p {
+.poster {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  background: radial-gradient(120px 80px at 20% 20%, rgba(56, 189, 248, 0.2), transparent 60%),
+    rgba(15, 23, 42, 0.85);
+}
+
+.poster img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.poster-fallback {
+  height: 100%;
+  display: grid;
+  place-items: center;
+  color: #94a3b8;
+  font-size: 0.85rem;
+}
+
+.rating-badge {
   position: absolute;
-  font-size: 0.8em;
-  font-weight: 800;
-  bottom: 6px;
-  right: 6px;
+  top: 10px;
+  left: 10px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #e2e8f0;
+  font-size: 0.8rem;
+  font-weight: 700;
+  box-shadow: 0 8px 14px rgba(2, 6, 23, 0.35);
+}
+
+.overlay {
+  position: absolute;
+  inset: auto 0 0 0;
+  padding: 14px 12px;
+  background:
+    linear-gradient(180deg, rgba(15, 23, 42, 0), rgba(2, 6, 23, 0.9));
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
 }
 
 .movie-title {
-  font-size: 1rem;
-  color: #eee;
-  margin-bottom: 0.5rem;
+  font-size: 0.98rem;
+  color: #fef3c7;
+  margin-bottom: 4px;
+  line-height: 1.2;
+  text-shadow:
+    0 2px 8px rgba(2, 6, 23, 0.85),
+    0 0 12px rgba(0, 229, 255, 0.35);
 }
 
-.movie-description {
-  font-size: 1rem;
-  color: #666;
+.movie-meta {
+  font-size: 0.8rem;
+  color: #cbd5e1;
 }
 </style>

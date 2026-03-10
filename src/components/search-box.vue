@@ -1,13 +1,14 @@
 <script setup>
 import { useMoviesStore } from "@/store/store";
 import { useRouter } from "vue-router"
-import { ref } from "vue";
+import { onBeforeUnmount, onMounted, ref } from "vue";
 
 const router = useRouter()
 const moviesStore = useMoviesStore();
 const openMenuFor = ref(null);
 const pendingMovieId = ref(null);
 const addedMovieIds = ref(new Set());
+const containerRef = ref(null);
 
 function selectMovie(movie) {
   moviesStore.openSingleMovie(movie); // example: save selected movie in store
@@ -39,10 +40,24 @@ const addToWatchlist = async (movieId) => {
 };
 
 const isAdded = (movieId) => addedMovieIds.value.has(movieId);
+
+const handleOutsideClick = (event) => {
+  if (!event.target.closest(".search-movies")) {
+    moviesStore.searched_results = [];
+  }
+};
+
+onMounted(() => {
+  document.addEventListener("click", handleOutsideClick);
+});
+
+onBeforeUnmount(() => {
+  document.removeEventListener("click", handleOutsideClick);
+});
 </script>
 
 <template>
-  <div class="container">
+  <div class="container" ref="containerRef">
     <ul>
       <li
         v-for="movie in moviesStore.searched_results"
@@ -82,7 +97,7 @@ const isAdded = (movieId) => addedMovieIds.value.has(movieId);
 <style scoped>
 .container {
   width: min(520px, 100%);
-  max-height: 250px;
+  max-height: 480px;
   overflow-y: auto;
   transition: all 0.3s ease-in;
   position: absolute;
