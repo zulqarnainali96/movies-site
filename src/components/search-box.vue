@@ -1,7 +1,7 @@
 <script setup>
 import { useMoviesStore } from "@/store/store";
 import { useRouter } from "vue-router"
-import { onBeforeUnmount, onMounted, ref } from "vue";
+import { onBeforeUnmount, onMounted, ref, watch } from "vue";
 
 const router = useRouter()
 const moviesStore = useMoviesStore();
@@ -9,6 +9,7 @@ const openMenuFor = ref(null);
 const pendingMovieId = ref(null);
 const addedMovieIds = ref(new Set());
 const containerRef = ref(null);
+const hasFetchedWatchlist = ref(false);
 
 function selectMovie(movie) {
   moviesStore.openSingleMovie(movie); // example: save selected movie in store
@@ -39,17 +40,54 @@ const addToWatchlist = async (movieId) => {
   }
 };
 
-const isAdded = (movieId) => addedMovieIds.value.has(movieId);
+const removeFromWatchlist = async (movieId) => {
+  if (pendingMovieId.value === movieId) return;
+  pendingMovieId.value = movieId;
+  try {
+    const response = await moviesStore.removeMovieFromWatchlist(movieId);
+    if (response?.success || response?.status_code === 13) {
+      const next = new Set(addedMovieIds.value);
+      next.delete(movieId);
+      addedMovieIds.value = next;
+    }
+  } finally {
+    pendingMovieId.value = null;
+    openMenuFor.value = null;
+  }
+};
+
+const isInWatchlist = (movieId) =>
+  addedMovieIds.value.has(movieId) ||
+  moviesStore.watched_movies.some((movie) => movie.id === movieId);
+
+const ensureWatchlistLoaded = async () => {
+  if (hasFetchedWatchlist.value) return;
+  hasFetchedWatchlist.value = true;
+  await moviesStore.watchedMovies(1);
+};
 
 const handleOutsideClick = (event) => {
-  if (!event.target.closest(".search-movies")) {
-    moviesStore.searched_results = [];
-  }
+  const path = event.composedPath ? event.composedPath() : [];
+  const clickedInside = path.some(
+    (node) =>
+      node?.classList?.contains("search-movies") ||
+      node?.classList?.contains("container")
+  );
+  if (!clickedInside) moviesStore.searched_results = [];
 };
 
 onMounted(() => {
   document.addEventListener("click", handleOutsideClick);
 });
+
+watch(
+  () => moviesStore.search_movies,
+  (value) => {
+    if (value && value.trim().length > 0) {
+      ensureWatchlistLoaded();
+    }
+  }
+);
 
 onBeforeUnmount(() => {
   document.removeEventListener("click", handleOutsideClick);
@@ -82,10 +120,19 @@ onBeforeUnmount(() => {
             <button
               class="menu-item"
               type="button"
-              :disabled="pendingMovieId === movie.id || isAdded(movie.id)"
+              :disabled="pendingMovieId === movie.id || isInWatchlist(movie.id)"
               @click.stop.prevent="addToWatchlist(movie.id)"
             >
-              {{ isAdded(movie.id) ? "Added to Watchlist" : "Add to Watchlist" }}
+              {{ isInWatchlist(movie.id) ? "Added to Watchlist" : "Add to Watchlist" }}
+            </button>
+            <button
+              v-if="isInWatchlist(movie.id)"
+              class="menu-item danger"
+              type="button"
+              :disabled="pendingMovieId === movie.id"
+              @click.stop.prevent="removeFromWatchlist(movie.id)"
+            >
+              Remove from Watchlist
             </button>
           </div>
         </div>
@@ -198,5 +245,13 @@ onBeforeUnmount(() => {
 .menu-item:disabled {
   opacity: 0.7;
   cursor: default;
+}
+
+.menu-item.danger {
+  color: #fca5a5;
+}
+
+.menu-item.danger:hover {
+  background: rgba(248, 113, 113, 0.15);
 }
 </style>

@@ -73,6 +73,13 @@ export const useMoviesStore = defineStore("moviesData", {
       const data = await apiCalls.addToWatchlist(movieId);
       return data;
     },
+    async removeMovieFromWatchlist(movieId) {
+      const data = await apiCalls.removeFromWatchlist(movieId);
+      if (data?.success || data?.status_code === 13) {
+        this.watched_movies = this.watched_movies.filter((movie) => movie.id !== movieId);
+      }
+      return data;
+    },
     async nowPlaying() {
       const data = await apiCalls.nowPlaying();
       this.now_playing = data.results;

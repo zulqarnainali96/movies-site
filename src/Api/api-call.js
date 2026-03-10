@@ -65,6 +65,35 @@ const apiCalls = {
       }
     });
   },
+  removeFromWatchlist(movieId) {
+    const options = {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${import.meta.env.VITE_READ_ACCESS_TOKEN}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        media_type: "movie",
+        media_id: movieId,
+        watchlist: false,
+      }),
+    };
+
+    return new Promise(async (resolve, reject) => {
+      try {
+        const response = await fetch(
+          `${import.meta.env.VITE_API_URL}/account/${
+            import.meta.env.VITE_ACCOUND_ID
+          }/watchlist`,
+          options
+        );
+        const data = await response.json();
+        resolve(data);
+      } catch (err) {
+        reject(err);
+      }
+    });
+  },
   nowPlaying() {
     let options = {
       method: "GET",

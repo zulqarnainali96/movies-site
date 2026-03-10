@@ -10,6 +10,8 @@ const moviesStore = useMoviesStore();
 const movie = ref(moviesStore.single_movie || null);
 const isLoading = ref(false);
 const error = ref(null);
+const pendingMovieId = ref(null);
+const addedMovieIds = ref(new Set());
 
 const movieId = computed(() => route.params.id);
 
@@ -57,6 +59,21 @@ const ratingPercent = computed(() => {
   const score = Number(movie.value?.vote_average || 0);
   return Math.round(score * 10);
 });
+
+const addToWatchlist = async (movieId) => {
+  if (!movieId || pendingMovieId.value === movieId) return;
+  pendingMovieId.value = movieId;
+  try {
+    const response = await moviesStore.addMovieToWatchlist(movieId);
+    if (response?.success || response?.status_code === 1 || response?.status_code === 12) {
+      addedMovieIds.value = new Set(addedMovieIds.value).add(movieId);
+    }
+  } finally {
+    pendingMovieId.value = null;
+  }
+};
+
+const isAdded = computed(() => addedMovieIds.value.has(movie.value?.id));
 </script>
 
 <template>
@@ -97,6 +114,16 @@ const ratingPercent = computed(() => {
             <span class="stat-value">{{ Math.round(movie?.popularity || 0) }}</span>
             <span class="stat-sub">TMDB rank</span>
           </div>
+        </div>
+        <div class="actions">
+          <button
+            class="watchlist-btn"
+            type="button"
+            :disabled="pendingMovieId === movie?.id || isAdded"
+            @click="addToWatchlist(movie?.id)"
+          >
+            {{ isAdded ? "Added to Watchlist" : "Add to Watchlist" }}
+          </button>
         </div>
       </div>
       <div class="poster-panel">
@@ -292,6 +319,35 @@ const ratingPercent = computed(() => {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
   gap: 12px;
+}
+
+.actions {
+  margin-top: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.watchlist-btn {
+  padding: 10px 16px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.08));
+  color: #e2e8f0;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.watchlist-btn:hover {
+  background: linear-gradient(135deg, rgba(125, 211, 252, 0.35), rgba(244, 114, 182, 0.2));
+  border-color: rgba(125, 211, 252, 0.6);
+  color: #f8fafc;
+}
+
+.watchlist-btn:disabled {
+  opacity: 0.7;
+  cursor: default;
 }
 
 .stat-card {
