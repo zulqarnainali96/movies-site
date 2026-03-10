@@ -1,13 +1,12 @@
 import watchedMoviesArray from "@/watched-movies-data";
 
+const API_BASE = import.meta.env.VITE_API_URL || "https://api.themoviedb.org/3";
+const API_KEY = import.meta.env.VITE_API_KEY;
+
 const apiCalls = {
   popularMovies() {
     return new Promise(async (resolve, reject) => {
-      const repsonse = await fetch(
-        `${import.meta.env.VITE_API_URL}/movie/popular?api_key=${
-          import.meta.env.VITE_API_KEY
-        }`
-      );
+      const repsonse = await fetch(`${API_BASE}/movie/popular?api_key=${API_KEY}`);
       const data = await repsonse.json();
       resolve(data);
     });
@@ -21,9 +20,10 @@ const apiCalls = {
     };
     return new Promise(async (resolve, reject) => {
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/account/${
+        `${API_BASE}/account/${
           import.meta.env.VITE_ACCOUND_ID
-        }/watchlist/movies?page=${page}`, options
+        }/watchlist/movies?page=${page}`,
+        options
       );
       const data = await response.json();
       resolve(data);
@@ -53,9 +53,7 @@ const apiCalls = {
     return new Promise(async (resolve, reject) => {
       try {
         const response = await fetch(
-          `${import.meta.env.VITE_API_URL}/account/${
-            import.meta.env.VITE_ACCOUND_ID
-          }/watchlist`,
+          `${API_BASE}/account/${import.meta.env.VITE_ACCOUND_ID}/watchlist`,
           options
         );
         const data = await response.json();
@@ -82,9 +80,7 @@ const apiCalls = {
     return new Promise(async (resolve, reject) => {
       try {
         const response = await fetch(
-          `${import.meta.env.VITE_API_URL}/account/${
-            import.meta.env.VITE_ACCOUND_ID
-          }/watchlist`,
+          `${API_BASE}/account/${import.meta.env.VITE_ACCOUND_ID}/watchlist`,
           options
         );
         const data = await response.json();
@@ -102,9 +98,7 @@ const apiCalls = {
       },
     };
     return new Promise(async (resolve, reject) => {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/movie/now_playing`, options
-      );
+      const response = await fetch(`${API_BASE}/movie/now_playing`, options);
       const data = await response.json();
       resolve(data);
     });
@@ -117,9 +111,7 @@ const apiCalls = {
       },
     };
     return new Promise(async (resolve, reject) => {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/movie/upcoming`, options
-      );
+      const response = await fetch(`${API_BASE}/movie/upcoming`, options);
       const data = await response.json();
       resolve(data);
     });
@@ -132,8 +124,7 @@ const apiCalls = {
       },
     };
     return new Promise(async (resolve, reject) => {
-      const response = await fetch( `${import.meta.env.VITE_API_URL}/movie/top_rated`, options
-      );
+      const response = await fetch(`${API_BASE}/movie/top_rated`, options);
       const data = await response.json();
       resolve(data);
     });
@@ -149,7 +140,7 @@ const apiCalls = {
     return new Promise(async (resolve, reject) => {
       try {
         const response = await fetch(
-          `${import.meta.env.VITE_API_URL}/search/movie?query=${encodeURIComponent(query)}`,
+          `${API_BASE}/search/movie?query=${encodeURIComponent(query)}`,
           options
         );
         const data = await response.json();
@@ -170,7 +161,7 @@ const apiCalls = {
     return new Promise(async (resolve, reject) => {
       try {
         const response = await fetch(
-          `${import.meta.env.VITE_API_URL}/movie/${id}?append_to_response=videos,credits`,
+          `${API_BASE}/movie/${id}?append_to_response=videos,credits`,
           options
         );
         const data = await response.json();
