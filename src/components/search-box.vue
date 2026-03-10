@@ -45,13 +45,22 @@ function selectMovie(movie) {
   max-height: 250px;
   overflow-y: auto;
   transition: all 0.3s ease-in;
-  background-color: rgb(255, 248, 248);
   position: absolute;
-  box-shadow: 10px 4px 21px -11px gray;
+  background:
+    linear-gradient(180deg, rgba(15, 23, 42, 0.98), rgba(15, 23, 42, 0.88));
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 16px 28px rgba(2, 6, 23, 0.45);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   z-index: 999;
   top: calc(100% + 8px);
   right: 0;
   border-radius: 10px;
+}
+
+.container ul {
+  list-style: none;
+  padding: 6px;
 }
 
 .search-item {
@@ -62,8 +71,15 @@ function selectMovie(movie) {
   justify-content: flex-start;
   cursor: pointer;
   transition: background 0.2s;
+  border-radius: 10px;
+  color: #e2e8f0;
 }
 .search-item:hover {
-  background: #f0f0f0;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.search-item img {
+  border-radius: 8px;
+  object-fit: cover;
 }
 </style>
