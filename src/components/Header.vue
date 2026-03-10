@@ -80,19 +80,24 @@ function closeMenu() {
 
 .brand-text {
     font-size: 1.05rem;
-    letter-spacing: 0.2em;
-    padding: 6px 12px;
+    letter-spacing: 0.28em;
+    padding: 6px 14px;
     border-radius: 999px;
+    text-transform: uppercase;
+    color: #e2f7ff;
     background:
-        linear-gradient(120deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.02));
-    border: 1px solid rgba(255, 255, 255, 0.2);
+        radial-gradient(120px 50px at 20% 50%, rgba(0, 229, 255, 0.28), transparent 65%),
+        radial-gradient(140px 60px at 80% 40%, rgba(244, 114, 182, 0.25), transparent 70%),
+        rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(94, 234, 212, 0.45);
     box-shadow:
-        0 8px 18px rgba(2, 6, 23, 0.35),
-        inset 0 0 0 1px rgba(255, 255, 255, 0.04);
-    color: #f8fafc;
+        0 0 12px rgba(0, 229, 255, 0.45),
+        0 0 24px rgba(99, 102, 241, 0.25),
+        inset 0 0 12px rgba(94, 234, 212, 0.25);
     text-shadow:
-        0 1px 0 rgba(15, 23, 42, 0.6),
-        0 0 18px rgba(125, 211, 252, 0.4);
+        0 0 8px rgba(0, 229, 255, 0.7),
+        0 0 18px rgba(56, 189, 248, 0.55),
+        0 0 32px rgba(244, 114, 182, 0.35);
 }
 
 .nav-links {
