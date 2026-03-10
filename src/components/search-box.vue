@@ -1,9 +1,13 @@
 <script setup>
 import { useMoviesStore } from "@/store/store";
 import { useRouter } from "vue-router"
+import { ref } from "vue";
 
 const router = useRouter()
 const moviesStore = useMoviesStore();
+const openMenuFor = ref(null);
+const pendingMovieId = ref(null);
+const addedMovieIds = ref(new Set());
 
 function selectMovie(movie) {
   moviesStore.openSingleMovie(movie); // example: save selected movie in store
@@ -15,6 +19,26 @@ function selectMovie(movie) {
     path : "/movies"
   })
 }
+
+const toggleMenu = (movieId) => {
+  openMenuFor.value = openMenuFor.value === movieId ? null : movieId;
+};
+
+const addToWatchlist = async (movieId) => {
+  if (pendingMovieId.value === movieId) return;
+  pendingMovieId.value = movieId;
+  try {
+    const response = await moviesStore.addMovieToWatchlist(movieId);
+    if (response?.success || response?.status_code === 1 || response?.status_code === 12) {
+      addedMovieIds.value = new Set(addedMovieIds.value).add(movieId);
+    }
+  } finally {
+    pendingMovieId.value = null;
+    openMenuFor.value = null;
+  }
+};
+
+const isAdded = (movieId) => addedMovieIds.value.has(movieId);
 </script>
 
 <template>
@@ -31,9 +55,25 @@ function selectMovie(movie) {
           width="80"
           height="100"
         />
-        <strong>{{ movie.title }}</strong> ({{
-          movie.release_date?.slice(0, 4)
-        }})
+        <div class="search-meta">
+          <strong>{{ movie.title }}</strong>
+          <span class="search-year">({{ movie.release_date?.slice(0, 4) || "TBD" }})</span>
+        </div>
+        <div class="menu-wrapper" @click.stop>
+          <button class="menu-btn" type="button" @click.stop.prevent="toggleMenu(movie.id)">
+            &#8942;
+          </button>
+          <div v-if="openMenuFor === movie.id" class="menu-dropdown">
+            <button
+              class="menu-item"
+              type="button"
+              :disabled="pendingMovieId === movie.id || isAdded(movie.id)"
+              @click.stop.prevent="addToWatchlist(movie.id)"
+            >
+              {{ isAdded(movie.id) ? "Added to Watchlist" : "Add to Watchlist" }}
+            </button>
+          </div>
+        </div>
       </li>
     </ul>
   </div>
@@ -81,5 +121,67 @@ function selectMovie(movie) {
 .search-item img {
   border-radius: 8px;
   object-fit: cover;
+}
+
+.search-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+
+.search-year {
+  color: #94a3b8;
+  font-size: 0.85rem;
+}
+
+.menu-wrapper {
+  position: relative;
+  margin-left: auto;
+}
+
+.menu-btn {
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(15, 23, 42, 0.8);
+  color: #fff;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.menu-dropdown {
+  position: absolute;
+  top: 30px;
+  right: 0;
+  min-width: 160px;
+  background: #0f172a;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 8px;
+  padding: 4px;
+  z-index: 1000;
+}
+
+.menu-item {
+  width: 100%;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: #e2e8f0;
+  text-align: left;
+  padding: 8px;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.menu-item:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.menu-item:disabled {
+  opacity: 0.7;
+  cursor: default;
 }
 </style>
