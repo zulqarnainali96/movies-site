@@ -1,15 +1,12 @@
 <script setup>
 import { useMoviesStore } from "@/store/store";
 import { useRouter } from "vue-router"
-import { onBeforeUnmount, onMounted, ref, watch } from "vue";
+import { onBeforeUnmount, onMounted, ref } from "vue";
 
 const router = useRouter()
 const moviesStore = useMoviesStore();
 const openMenuFor = ref(null);
 const pendingMovieId = ref(null);
-const addedMovieIds = ref(new Set());
-const containerRef = ref(null);
-const hasFetchedWatchlist = ref(false);
 
 function selectMovie(movie) {
   moviesStore.openSingleMovie(movie); // example: save selected movie in store
@@ -26,13 +23,16 @@ const toggleMenu = (movieId) => {
   openMenuFor.value = openMenuFor.value === movieId ? null : movieId;
 };
 
-const addToWatchlist = async (movieId) => {
-  if (pendingMovieId.value === movieId) return;
-  pendingMovieId.value = movieId;
+const addToWatchlist = async (movie) => {
+  if (!movie?.id || pendingMovieId.value === movie.id) return;
+  pendingMovieId.value = movie.id;
   try {
-    const response = await moviesStore.addMovieToWatchlist(movieId);
-    if (response?.success || response?.status_code === 1 || response?.status_code === 12) {
-      addedMovieIds.value = new Set(addedMovieIds.value).add(movieId);
+    const response = await moviesStore.addMovieToWatchlist(movie.id);
+    if (
+      (response?.success || response?.status_code === 1 || response?.status_code === 12) &&
+      !moviesStore.watched_movies.some((item) => item.id === movie.id)
+    ) {
+      moviesStore.watched_movies = [movie, ...moviesStore.watched_movies];
     }
   } finally {
     pendingMovieId.value = null;
@@ -45,11 +45,6 @@ const removeFromWatchlist = async (movieId) => {
   pendingMovieId.value = movieId;
   try {
     const response = await moviesStore.removeMovieFromWatchlist(movieId);
-    if (response?.success || response?.status_code === 13) {
-      const next = new Set(addedMovieIds.value);
-      next.delete(movieId);
-      addedMovieIds.value = next;
-    }
   } finally {
     pendingMovieId.value = null;
     openMenuFor.value = null;
@@ -57,14 +52,7 @@ const removeFromWatchlist = async (movieId) => {
 };
 
 const isInWatchlist = (movieId) =>
-  addedMovieIds.value.has(movieId) ||
   moviesStore.watched_movies.some((movie) => movie.id === movieId);
-
-const ensureWatchlistLoaded = async () => {
-  if (hasFetchedWatchlist.value) return;
-  hasFetchedWatchlist.value = true;
-  await moviesStore.watchedMovies(1);
-};
 
 const handleOutsideClick = (event) => {
   const path = event.composedPath ? event.composedPath() : [];
@@ -80,22 +68,13 @@ onMounted(() => {
   document.addEventListener("click", handleOutsideClick);
 });
 
-watch(
-  () => moviesStore.search_movies,
-  (value) => {
-    if (value && value.trim().length > 0) {
-      ensureWatchlistLoaded();
-    }
-  }
-);
-
 onBeforeUnmount(() => {
   document.removeEventListener("click", handleOutsideClick);
 });
 </script>
 
 <template>
-  <div class="container" ref="containerRef">
+  <div class="container">
     <ul>
       <li
         v-for="movie in moviesStore.searched_results"
@@ -121,7 +100,7 @@ onBeforeUnmount(() => {
               class="menu-item"
               type="button"
               :disabled="pendingMovieId === movie.id || isInWatchlist(movie.id)"
-              @click.stop.prevent="addToWatchlist(movie.id)"
+              @click.stop.prevent="addToWatchlist(movie)"
             >
               {{ isInWatchlist(movie.id) ? "Added to Watchlist" : "Add to Watchlist" }}
             </button>
