@@ -20,8 +20,7 @@ function closeMenu() {
 
         <div class="brand">
             <router-link class="brand-link" to="/" @click="closeMenu">
-                <img class="brand-logo" src="/favi.png" alt="MoviesMania logo" />
-                <span>MoviesMania</span>
+                <span class="brand-text">Movies Mania</span>
             </router-link>
         </div>
 
@@ -79,11 +78,21 @@ function closeMenu() {
     font-size: 0.9rem;
 }
 
-.brand-logo {
-    width: 96px;
-    height: 46px;
-    object-fit: contain;
-    display: block;
+.brand-text {
+    font-size: 1.05rem;
+    letter-spacing: 0.2em;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background:
+        linear-gradient(120deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.02));
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow:
+        0 8px 18px rgba(2, 6, 23, 0.35),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+    color: #f8fafc;
+    text-shadow:
+        0 1px 0 rgba(15, 23, 42, 0.6),
+        0 0 18px rgba(125, 211, 252, 0.4);
 }
 
 .nav-links {
