@@ -38,11 +38,26 @@ onMounted(() => {
 
 <style scoped>
 .movies-list {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   gap: 16px;
   width: 100%;
   height: 100%;
   margin-top: 16px;
+}
+
+@media screen and (max-width: 768px) {
+  .movies-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .movies-list :deep(.movie-card) {
+    width: 100%;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .movies-list {
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+  }
 }
 </style>

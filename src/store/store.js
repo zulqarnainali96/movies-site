@@ -8,6 +8,11 @@ export const useMoviesStore = defineStore("moviesData", {
     watched_movies: [],
     watched_page: 0,
     watched_total_pages: 1,
+    watched_loaded_pages: {},
+    watched_loading_pages: {},
+    watched_all_movies: [],
+    watched_all_loaded: false,
+    watched_all_loading: false,
     popular_movies: [],
     now_playing: [],
     top_rated_movies: [],
@@ -59,15 +64,93 @@ export const useMoviesStore = defineStore("moviesData", {
         this.isLoading = false;
       }
     },
-    async watchedMovies(page = 1) {
-      const data = await apiCalls.watchedMovies(page);
-      this.watched_page = data.page || page;
-      this.watched_total_pages = data.total_pages || 1;
-      if (page === 1) {
-        this.watched_movies = data.results || [];
+    async watchedMovies(page = 1, options = {}) {
+      const { force = false } = options;
+
+      if (!force && this.watched_loaded_pages[page]) {
+        this.watched_page = Math.max(this.watched_page, page);
         return;
       }
-      this.watched_movies = [...this.watched_movies, ...(data.results || [])];
+
+      if (this.watched_loading_pages[page]) return;
+      this.watched_loading_pages = {
+        ...this.watched_loading_pages,
+        [page]: true,
+      };
+
+      try {
+        const data = await apiCalls.watchedMovies(page);
+        const incomingPage = data.page || page;
+        const results = data.results || [];
+
+        this.watched_total_pages = data.total_pages || 1;
+        this.watched_page = Math.max(this.watched_page, incomingPage);
+
+        if (incomingPage === 1 && (force || !this.watched_loaded_pages[1])) {
+          this.watched_movies = results;
+        } else {
+          const existingIds = new Set(this.watched_movies.map((movie) => movie.id));
+          const uniqueIncoming = results.filter((movie) => !existingIds.has(movie.id));
+          this.watched_movies = [...this.watched_movies, ...uniqueIncoming];
+        }
+
+        this.watched_loaded_pages = {
+          ...this.watched_loaded_pages,
+          [incomingPage]: true,
+        };
+      } finally {
+        this.watched_loading_pages = {
+          ...this.watched_loading_pages,
+          [page]: false,
+        };
+      }
+    },
+    async fetchAllWatchedMovies(options = {}) {
+      const { force = false } = options;
+
+      if (!force && this.watched_all_loaded) return this.watched_all_movies;
+      if (this.watched_all_loading) return this.watched_all_movies;
+
+      this.watched_all_loading = true;
+
+      try {
+        let page = 1;
+        let totalPages = 1;
+        const allMovies = [];
+        const existingIds = new Set();
+
+        while (page <= totalPages) {
+          const data = await apiCalls.watchedMovies(page);
+          totalPages = data.total_pages || 1;
+
+          for (const movie of data.results || []) {
+            if (existingIds.has(movie.id)) continue;
+            existingIds.add(movie.id);
+            allMovies.push(movie);
+          }
+
+          page += 1;
+        }
+
+        this.watched_all_movies = allMovies;
+        this.watched_all_loaded = true;
+        return this.watched_all_movies;
+      } catch (err) {
+        this.error = err;
+        return this.watched_all_movies;
+      } finally {
+        this.watched_all_loading = false;
+      }
+    },
+    clearWatchedCache() {
+      this.watched_movies = [];
+      this.watched_page = 0;
+      this.watched_total_pages = 1;
+      this.watched_loaded_pages = {};
+      this.watched_loading_pages = {};
+      this.watched_all_movies = [];
+      this.watched_all_loaded = false;
+      this.watched_all_loading = false;
     },
     async addMovieToWatchlist(movieId) {
       const data = await apiCalls.addToWatchlist(movieId);
@@ -77,6 +160,7 @@ export const useMoviesStore = defineStore("moviesData", {
       const data = await apiCalls.removeFromWatchlist(movieId);
       if (data?.success || data?.status_code === 13) {
         this.watched_movies = this.watched_movies.filter((movie) => movie.id !== movieId);
+        this.watched_all_movies = this.watched_all_movies.filter((movie) => movie.id !== movieId);
       }
       return data;
     },

@@ -9,6 +9,10 @@ const props = defineProps({
     type: Array,
     default: () => [],
   },
+  posterSize: {
+    type: String,
+    default: "w500",
+  },
   class: {
     type: String,
     required: false,
@@ -56,6 +60,20 @@ onMounted(() => {
 onBeforeUnmount(() => {
   document.removeEventListener("click", handleGlobalClick);
 });
+
+const buildPosterUrl = (posterPath, size = props.posterSize) => {
+  if (!posterPath) return "";
+  return `https://image.tmdb.org/t/p/${size}${posterPath}`;
+};
+
+const buildPosterSrcSet = (posterPath) => {
+  if (!posterPath) return "";
+  return [
+    `https://image.tmdb.org/t/p/w185${posterPath} 185w`,
+    `https://image.tmdb.org/t/p/w342${posterPath} 342w`,
+    `https://image.tmdb.org/t/p/w500${posterPath} 500w`,
+  ].join(", ");
+};
 </script>
 
 <template>
@@ -86,7 +104,11 @@ onBeforeUnmount(() => {
           <img
             v-if="movie.poster_path"
             loading="lazy"
-            :src="`https://image.tmdb.org/t/p/w500${movie.poster_path}`"
+            decoding="async"
+            fetchpriority="low"
+            :src="buildPosterUrl(movie.poster_path)"
+            :srcset="buildPosterSrcSet(movie.poster_path)"
+            sizes="(max-width: 768px) 33vw, (max-width: 1200px) 20vw, 210px"
             :alt="movie.title"
           />
           <div v-else class="poster-fallback">Poster unavailable</div>
@@ -106,6 +128,8 @@ onBeforeUnmount(() => {
 <style scoped>
 .movie-item {
   position: relative;
+  content-visibility: auto;
+  contain-intrinsic-size: 170px 255px;
 }
 
 .movie-link {
