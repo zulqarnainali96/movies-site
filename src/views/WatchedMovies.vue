@@ -1,8 +1,10 @@
 <script setup>
 import MovieCard from "@/components/movies-card/MovieCard.vue";
 import { useMoviesStore } from "@/store/store.js";
+import { useRouter } from "vue-router";
 import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
 
+const router = useRouter();
 const moviesData = useMoviesStore();
 const searchTerm = ref("");
 const selectedRating = ref("");
@@ -54,7 +56,7 @@ watch(useApiSearch, (enabled) => {
     window.localStorage.setItem(SEARCH_MODE_STORAGE_KEY, enabled ? "1" : "0");
   }
 
-  if (enabled && searchTerm.value.trim()) {
+  if (enabled) {
     moviesData.fetchAllWatchedMovies();
   }
 });
@@ -86,6 +88,25 @@ const activeWatchedSource = computed(() =>
     ? moviesData.watched_all_movies
     : moviesData.watched_movies
 );
+
+const apiSearchSuggestions = computed(() => {
+  if (!useApiSearch.value) return [];
+  const term = searchTerm.value.trim().toLowerCase();
+  if (!term) return [];
+
+  return moviesData.watched_all_movies
+    .filter((movie) => {
+      const title = (movie.title || movie.original_title || "").toLowerCase();
+      return title.includes(term);
+    })
+    .slice(0, 8);
+});
+
+const openMovieFromSearch = (movie) => {
+  moviesData.openSingleMovie(movie);
+  searchTerm.value = "";
+  router.push({ name: "SingleMovie", params: { id: movie.id } });
+};
 
 const filteredWatched = computed(() => {
   const term = searchTerm.value.trim().toLowerCase();
@@ -164,6 +185,34 @@ const industryOptions = computed(() => {
       <p class="api-search-note" v-if="useApiSearch && searchTerm.trim() && moviesData.watched_all_loading">
         Searching full watched list from API...
       </p>
+
+      <div
+        class="search-drop"
+        v-if="useApiSearch && searchTerm.trim() && !moviesData.watched_all_loading"
+      >
+        <ul v-if="apiSearchSuggestions.length">
+          <li
+            v-for="movie in apiSearchSuggestions"
+            :key="movie.id"
+            class="search-drop-item"
+            @click="openMovieFromSearch(movie)"
+          >
+            <img
+              v-if="movie.poster_path"
+              :src="`https://image.tmdb.org/t/p/w185${movie.poster_path}`"
+              width="44"
+              height="66"
+              :alt="movie.title"
+            />
+            <div v-else class="search-drop-fallback">No Poster</div>
+            <div class="search-drop-meta">
+              <strong>{{ movie.title }}</strong>
+              <span>{{ movie.release_date?.slice(0, 4) || "TBD" }}</span>
+            </div>
+          </li>
+        </ul>
+        <p v-else class="search-drop-empty">No matching watched movie found.</p>
+      </div>
 
       <div class="rating-row" v-if="ratingOptions.length">
         <label class="rating-label" for="rating-filter">Rating</label>
@@ -312,6 +361,73 @@ h1 {
   color: #bfdbfe;
   font-size: 0.85rem;
   margin-bottom: 12px;
+}
+
+.search-drop {
+  width: min(520px, 100%);
+  max-height: 300px;
+  overflow-y: auto;
+  border-radius: 10px;
+  margin-bottom: 12px;
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.98), rgba(15, 23, 42, 0.88));
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 12px 24px rgba(2, 6, 23, 0.45);
+}
+
+.search-drop ul {
+  list-style: none;
+  margin: 0;
+  padding: 6px;
+}
+
+.search-drop-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #e2e8f0;
+  padding: 8px;
+  border-radius: 9px;
+  cursor: pointer;
+}
+
+.search-drop-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.search-drop-item img {
+  border-radius: 7px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.search-drop-fallback {
+  width: 44px;
+  height: 66px;
+  border-radius: 7px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #cbd5e1;
+  display: grid;
+  place-items: center;
+  font-size: 0.65rem;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.search-drop-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.search-drop-meta span {
+  color: #94a3b8;
+  font-size: 0.82rem;
+}
+
+.search-drop-empty {
+  color: #cbd5e1;
+  font-size: 0.88rem;
+  padding: 10px 12px;
 }
 
 .rating-row {
